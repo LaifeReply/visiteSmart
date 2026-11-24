@@ -1,0 +1,126 @@
+:root {
+  /* colour carries meaning only: one hue per tipologia, the UI chrome stays neutral ink */
+  --paper: #f1f3f2;
+  --surface: #ffffff;
+  --ink: #1a2233;
+  --muted: #5a6563;
+  --line: #d8dddb;
+
+  /* UI chrome: buttons, focus rings, active filters, selection, today */
+  --accent: #2b3a55;
+  --accent-strong: #1a2233;
+  --accent-soft: #e6e9ef;
+  --accent-ink: #f5f7fa;
+
+  /* tipologie */
+  --au: #2e7d4f; /* AU = green */
+  --au-soft: #e2f1e7;
+  --ac: #2563a8; /* AC = blue, also the AC window band + hatch */
+  --ac-soft: #e2ebf7;
+  --ac-hatch: #d6e2f3;
+  --congiunta: #6b3fa0; /* violet: reserved for visite congiunte (V-11, not built yet), use it for nothing else */
+  --congiunta-soft: #efe8f7;
+
+  --danger: #b3261e;
+  --danger-soft: #fbeceb;
+  --pick: #c08419;
+  --shadow: 26, 34, 51; /* --ink as rgb, for rgba() shadows */
+
+  --radius-block: 4px;
+  --radius-control: 6px;
+  --radius-panel: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: 'Titillium Web', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.4;
+  background: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select {
+  font-family: inherit;
+}
+
+/* ---- select ----
+   Every <select> uses the browser's customizable select (Chromium 135+): the open list becomes real HTML we can
+   theme, while keyboard, typeahead and screen-reader behaviour stay native. Browsers without it keep the system
+   list; the closed box is styled per context (.field, .filter-chip) either way. */
+@supports (appearance: base-select) {
+  select,
+  ::picker(select) {
+    appearance: base-select;
+  }
+
+  select {
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  select::picker-icon {
+    content: '';
+    width: 10px;
+    height: 6px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%235a6563' stroke-width='1.5'/%3E%3C/svg%3E")
+      no-repeat center / contain;
+    transition: rotate 120ms ease;
+  }
+
+  select:open::picker-icon {
+    rotate: 180deg;
+  }
+
+  /* the open list: a white index card under the box, at least as wide as it */
+  ::picker(select) {
+    min-width: anchor-size(width);
+    max-height: 18rem;
+    margin-block: 4px;
+    padding: 0.3rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-control);
+    background: var(--surface);
+    box-shadow: 0 10px 28px rgba(var(--shadow), 0.16);
+    overflow-y: auto;
+  }
+
+  option {
+    padding: 0.45rem 0.75rem 0.45rem 0.9rem;
+    border-radius: var(--radius-block);
+    color: var(--ink);
+    font-size: 0.95rem;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  /* the chosen entry: accent rule on the left + bold, instead of the system tick */
+  option::checkmark {
+    display: none;
+  }
+
+  option:hover,
+  option:focus-visible {
+    background: var(--accent-soft);
+    outline: none;
+  }
+
+  option:checked {
+    font-weight: 600;
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+}

@@ -1,0 +1,1682 @@
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+}
+
+/* ---- masthead ---- */
+
+.masthead {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 1.75rem;
+  background: var(--ink); /* dark slim header bar, the usual frame of Italian PA tools */
+}
+
+.masthead-mark {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--accent-ink);
+}
+
+.app {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  width: 100%;
+}
+
+/* ---- calendar ---- */
+
+.calendar {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 2.5rem 3rem;
+}
+
+.calendar-header {
+  display: flex;
+  flex-wrap: wrap; /* narrow window: the buttons drop under the week title instead of squeezing it */
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.calendar-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.calendar-title {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+/* ---- calendar filters ---- */
+
+.calendar-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+/* the cells share borders: one bordered row of form fields, not separate floating chips */
+.filter-rail {
+  display: flex;
+  flex: 1 1 56rem; /* five fields: the count + Azzera move to their own line when they don't fit beside it */
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.filter-chip {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.1rem;
+  min-width: 0;
+  padding: 0.45rem 0.9rem 0.5rem;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.filter-chip + .filter-chip {
+  border-left: 1px solid var(--line);
+}
+
+.filter-sede {
+  flex: 1 1 auto;
+  min-width: 10rem;
+  cursor: text;
+}
+
+/* fixed widths: picking a long name or an hour never resizes the row */
+.filter-leader {
+  flex: 0 0 11rem;
+}
+
+.filter-orario {
+  flex: 0 0 12.5rem;
+}
+
+.filter-ulss {
+  flex: 0 0 11rem;
+}
+
+.filter-data {
+  flex: 0 0 10rem;
+}
+
+.filter-ulss select {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filter-leader select {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filter-chip:hover {
+  background: var(--paper);
+}
+
+/* cells touch, so focus is drawn inside the cell rather than as an outer ring */
+.filter-chip:focus-within {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.filter-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.filter-value {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+  color: var(--muted);
+}
+
+.filter-chip input,
+.filter-chip select {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background-color: transparent;
+  color: var(--ink);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.filter-chip input {
+  flex: 1;
+  width: 100%;
+}
+
+.filter-chip input::placeholder {
+  color: var(--muted);
+}
+
+.filter-chip select {
+  appearance: none;
+  padding-right: 1.1rem;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%235a6563' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right center;
+}
+
+/* customizable select draws its own chevron (::picker-icon, index.css): drop the fallback background one */
+@supports (appearance: base-select) {
+  .filter-chip select {
+    appearance: base-select; /* re-enable: the fallback rule above sets appearance: none */
+    padding-right: 0;
+    background-image: none;
+  }
+}
+
+/* a filter that is narrowing the view: tinted cell + accent rule along its bottom edge */
+.filter-chip.is-active {
+  background: var(--accent-soft);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.filter-chip.is-active:focus-within {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.filter-chip.is-active .filter-label {
+  color: var(--accent);
+}
+
+.filter-chip.is-active input,
+.filter-chip.is-active select {
+  font-weight: 600;
+}
+
+/* min-width fits the longest state ("3.007 di 3.007 visite" + "Azzera filtri"), so the row never shifts as it changes */
+.filter-summary {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 0.9rem;
+  min-width: 17rem;
+  margin-left: auto;
+}
+
+.filter-count {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.filter-count strong {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.filter-clear {
+  padding: 0.25rem 0.1rem;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.filter-clear:hover {
+  color: var(--accent-strong);
+}
+
+.filter-clear:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* narrow screens: cells stack, each a full-width row */
+@media (max-width: 720px) {
+  .filter-rail {
+    flex-direction: column;
+    flex-basis: 100%;
+  }
+
+  .filter-chip + .filter-chip {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  /* in a column flex-basis would become a height: let each cell size to its content */
+  .filter-rail > .filter-chip {
+    flex: 0 0 auto;
+  }
+}
+
+.calendar-nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nav-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.nav-btn-today {
+  width: auto;
+  padding: 0 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.nav-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.nav-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.week-grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 64px repeat(5, 1fr); /* Mon-Fri: no visits at the weekend */
+  grid-template-rows: auto 1fr;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.corner {
+  background: var(--surface);
+}
+
+.day-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.5rem 0.4rem;
+  border: none;
+  background: var(--surface);
+  font: inherit;
+  cursor: pointer;
+}
+
+.day-header:hover {
+  background: var(--paper);
+}
+
+.day-header:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.day-header-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.day-header-num {
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* finestra accreditamenti: banda blu (colore AC) sulle intestazioni (continua da un giorno all'altro) + tratteggio nelle colonne.
+   E' un bordo, non uno sfondo, cosi' "oggi" e finestra AC si leggono entrambi quando coincidono. */
+.day-header.is-ac-window {
+  box-shadow: inset 0 3px 0 var(--ac);
+}
+
+.day-header.is-today {
+  background: var(--accent-soft);
+}
+
+.day-header.is-today:hover {
+  background: var(--accent-soft);
+}
+
+.day-header.is-today .day-header-num {
+  color: var(--accent);
+}
+
+.day-header.is-today::after {
+  content: '';
+  width: 1.1rem;
+  height: 3px;
+  border-radius: 1px;
+  background: var(--accent);
+}
+
+/* hour-rail + day-body are siblings in the same grid row, each a flex column of 9 equal
+   hour cells, so their heights always line up; event-blocks float above a day-body by %. */
+.hour-rail {
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+}
+
+.hour-label {
+  flex: 1;
+  padding: 0.3rem 0.5rem 0 0;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.75rem;
+  text-align: right;
+  border-bottom: 1px solid var(--line);
+}
+
+.hour-label:last-child {
+  border-bottom: none;
+}
+
+.day-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+}
+
+.day-body.is-ac-window {
+  background: repeating-linear-gradient(135deg, var(--surface) 0 9px, var(--ac-hatch) 9px 10px);
+}
+
+.slot {
+  flex: 1;
+  padding: 0;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.slot:last-child {
+  border-bottom: none;
+}
+
+.slot:hover {
+  background: var(--accent-soft);
+}
+
+.slot:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+.slot.is-selected {
+  background: var(--accent);
+}
+
+.slot.is-selected:hover {
+  background: var(--accent);
+}
+
+.event-block {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  overflow: hidden;
+  border: none;
+  border-left: 3px solid var(--au);
+  border-radius: var(--radius-block);
+  background: var(--au-soft);
+  padding: 0.3rem 0.4rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.event-block:hover {
+  background: color-mix(in srgb, var(--au) 22%, var(--surface));
+}
+
+.event-block:focus-visible {
+  outline: 2px solid var(--au);
+  outline-offset: 1px;
+}
+
+.event-block strong {
+  font-size: 0.75rem;
+  line-height: 1.2;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-block span {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.7rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-block.tipologia-ac {
+  border-left-color: var(--ac);
+  background: var(--ac-soft);
+}
+
+.event-block.tipologia-ac:hover {
+  background: color-mix(in srgb, var(--ac) 22%, var(--surface));
+}
+
+.event-block.tipologia-ac:focus-visible {
+  outline-color: var(--ac);
+}
+
+/* a crowded day: one compact tally card per start hour, sitting in that hour's row (the AC hatch stays
+   visible around it), with the AU/AC split as a proportional bar in the two tipologia colours */
+.hour-cluster {
+  position: absolute;
+  z-index: 2;
+  left: 2px;
+  right: 2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.2rem;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-block);
+  background: var(--surface);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.hour-cluster-count {
+  line-height: 1;
+  font-size: 0.75rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.hour-cluster-count strong {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.dense-split {
+  flex-shrink: 0; /* on a short screen the card is ~32px: squeeze the padding, never the AU/AC bar */
+  display: flex;
+  gap: 2px;
+  height: 5px;
+}
+
+.dense-split i {
+  flex-basis: 0;
+  border-radius: 999px;
+}
+
+.dense-au {
+  background: var(--au);
+}
+
+.dense-ac {
+  background: var(--ac);
+}
+
+.hour-cluster:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(var(--shadow), 0.12);
+}
+
+.hour-cluster:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---- sidebar ---- */
+
+.sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  padding: 2.5rem 1.75rem;
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+}
+
+.sidebar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btn {
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease;
+}
+
+.btn:hover {
+  border-color: var(--accent);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn-primary:hover {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+
+.sidebar-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.field span {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.field input,
+.field select {
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.field input:focus-visible,
+.field select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+.field-hint {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.time-range {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.time-range .field {
+  flex: 1;
+}
+
+/* ---- modal ---- */
+
+.modal {
+  width: min(460px, calc(100vw - 2rem));
+  max-height: calc(100vh - 4rem);
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 12px 32px rgba(var(--shadow), 0.2);
+}
+
+.modal::backdrop {
+  background: rgba(var(--shadow), 0.4);
+}
+
+.modal-shell {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 4rem);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.modal-close {
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.modal-close:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.modal-wide {
+  width: min(960px, calc(100vw - 2rem));
+}
+
+/* reserve the panel height up front: no jump from the one-line "Caricamento…" to the full panel */
+.modal-wide .modal-body {
+  min-height: min(70vh, 640px);
+}
+
+/* ---- visita form ---- */
+
+.visita-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.field-group legend,
+.field-group-label {
+  padding: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* a fixed value shown as a flat label: only shown, never a control */
+.campo-fixed {
+  align-self: flex-start;
+  padding: 0.25rem 0.7rem;
+  border-top: 3px solid var(--ac); /* same band as the AC days in the calendar header */
+  border-radius: var(--radius-block);
+  background: var(--ac-soft);
+  color: var(--ac);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: default;
+  user-select: none;
+}
+
+.evaluator-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.evaluator-row-main {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* the select plus its "Esterno" flag, inside the box just left of the chevron */
+.evaluator-slot {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+.esterno-flag {
+  position: absolute;
+  top: 50%;
+  right: 2.25rem; /* clear of the select's chevron */
+  transform: translateY(-50%);
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--surface);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  pointer-events: none; /* clicks go through to the select */
+}
+
+.evaluator-row-main select {
+  flex: 1;
+  min-width: 0;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.evaluator-row-main select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+.evaluator-remove {
+  flex-shrink: 0;
+  width: 2.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.evaluator-remove:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.evaluator-remove:focus-visible {
+  outline: 2px solid var(--danger);
+  outline-offset: 2px;
+}
+
+.btn-add {
+  border-style: dashed;
+  text-align: center;
+  color: var(--muted);
+}
+
+.btn-add:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.form-error {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--danger);
+}
+
+/* a chosen TL / evaluator who breaks a team constraint for the date and time in the form */
+.vincolo-error {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  color: var(--danger);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* ---- day agenda (the "zoom in" popup for a single day) ---- */
+
+.day-agenda-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.day-agenda {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.agenda-item {
+  display: flex;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.agenda-item:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.agenda-time {
+  flex-shrink: 0;
+  width: 3rem;
+  padding-top: 0.1rem;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.agenda-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.agenda-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-edit {
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.btn-edit:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-edit:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.agenda-heading strong {
+  font-size: 0.95rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.agenda-body p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.tipologia-badge {
+  flex-shrink: 0;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-block);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.tipologia-badge.tipologia-au {
+  background: var(--au-soft);
+  color: var(--au);
+}
+
+.tipologia-badge.tipologia-ac {
+  background: var(--ac-soft);
+  color: var(--ac);
+}
+
+/* ---- loading / api error ---- */
+
+.loading-state {
+  margin: auto;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.api-error {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-control);
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: 0.82rem;
+}
+
+/* ---- workload panel (chart + table) ---- */
+
+.workload-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.workload-tooltip {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  box-shadow: 0 4px 16px rgba(var(--shadow), 0.15);
+  font-size: 0.8rem;
+  max-width: 220px;
+}
+
+.workload-tooltip strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.85rem;
+}
+
+.workload-tooltip dl {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0;
+}
+
+.workload-tooltip dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.workload-tooltip dt {
+  color: var(--muted);
+}
+
+.workload-tooltip dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.workload-distribution-caption {
+  max-width: 72ch;
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.workload-distribution .recharts-wrapper:focus:not(:focus-visible),
+.workload-distribution .recharts-surface:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.workload-search {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.percentile-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--pick);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+}
+
+.percentile-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.percentile-card-value {
+  font-variant-numeric: tabular-nums;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.percentile-bar {
+  position: relative;
+  height: 8px;
+  margin-top: 0.15rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+}
+
+.percentile-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--pick) 45%, transparent);
+}
+
+.percentile-bar-pin {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  background: var(--pick);
+  transform: translate(-50%, -50%);
+}
+
+.percentile-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+.percentile-card-text {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.percentile-card-text b {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.swatch-pick {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--pick);
+}
+
+/* four figures read in a row: hairline-ruled strip, not cards */
+.workload-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 1.25rem;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.workload-stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.8rem 1rem;
+  border-left: 1px solid var(--line);
+}
+
+.workload-stats > div:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.workload-stats span {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.workload-stats strong {
+  font-variant-numeric: tabular-nums;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+@media (max-width: 640px) {
+  .workload-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .workload-stats > div:nth-child(3) {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+
+.workload-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem 1.1rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.workload-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.swatch {
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.swatch-bar {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 3px 3px 0 0;
+  background: #4a5d7a; /* = BAR_COLOR in WorkloadPanel */
+}
+
+.swatch-curve {
+  width: 1.1rem;
+  height: 0;
+  border-top: 2.5px solid var(--ink);
+}
+
+.swatch-mean {
+  width: 1.1rem;
+  height: 0;
+  border-top: 1.5px dashed var(--ink);
+}
+
+.swatch-band {
+  width: 0.9rem;
+  height: 0.7rem;
+  background: color-mix(in srgb, #4a5d7a 12%, transparent); /* the ±1σ ReferenceArea: BAR_COLOR at low opacity */
+}
+
+.workload-table {
+  width: 100%;
+  border-collapse: collapse;
+  /* fixed layout sizes columns from the header row only; auto layout re-measured all ~560 rows (~350 ms forced layout) */
+  table-layout: fixed;
+  font-size: 0.85rem;
+}
+
+.workload-table th,
+.workload-table td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+/* the header sticks to the top of the modal body: one scroll for the whole panel, no box scrolling inside a box */
+.workload-table th {
+  position: sticky;
+  top: -1.5rem; /* = .modal-body padding: stick flush under the modal header, no gap for rows to show through */
+  z-index: 1;
+  background: var(--surface);
+  box-shadow: inset 0 -1px 0 var(--line);
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.workload-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.tl-badge {
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: var(--radius-block);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+
+.workload-load {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* inline load bar in the Carico cell: plain CSS, no chart library */
+.load-bar {
+  display: inline-block;
+  width: 4.5rem;
+  height: 6px;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--accent-soft);
+}
+
+.load-bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+
+.workload-table th:nth-child(2) {
+  width: 7.5rem;
+}
+
+.workload-table th:nth-child(3) {
+  width: 10rem;
+  padding-left: 1.5rem;
+}
+
+.workload-table .workload-load {
+  padding-left: 1.5rem; /* room between the numbers and the bar; out-specifies the shared th/td padding */
+}
+
+.workload-show-all {
+  width: 100%;
+  border-width: 1px 0 0;
+  border-radius: 0;
+}
+
+/* ---- visite congiunte (V-11): the only place violet is used ---- */
+
+.event-block.tipologia-congiunta {
+  border-left-color: var(--congiunta);
+  background: var(--congiunta-soft);
+}
+
+.event-block.tipologia-congiunta:hover {
+  background: color-mix(in srgb, var(--congiunta) 22%, var(--surface));
+}
+
+.event-block.tipologia-congiunta:focus-visible {
+  outline-color: var(--congiunta);
+}
+
+.tipologia-badge.tipologia-congiunta {
+  background: var(--congiunta-soft);
+  color: var(--congiunta);
+}
+
+.dense-congiunta {
+  background: var(--congiunta);
+}
+
+/* notice in the edit form: a violet rule, like the AC band on the calendar headers */
+.congiunta-note {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-left: 3px solid var(--congiunta);
+  border-radius: var(--radius-block);
+  background: var(--congiunta-soft);
+}
+
+.congiunta-note p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ---- in arrivo entro 2 settimane ---- */
+
+.sidebar {
+  overflow-y: auto; /* the expiring list can outgrow the viewport */
+}
+
+.expiring-count {
+  margin-left: 0.4rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--accent-ink);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.expiring-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.expiring-list li {
+  border-bottom: 1px solid var(--line);
+}
+
+/* each row is one button: opens "Modifica" for that visit */
+.expiring-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  width: 100%;
+  padding: 0.6rem 0.25rem;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.expiring-row:hover {
+  background: var(--paper);
+}
+
+.expiring-row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.expiring-head {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.expiring-head strong {
+  overflow: hidden;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.expiring-when {
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.expiring-when.is-overdue {
+  color: var(--danger);
+}
+
+.expiring-detail {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.modal-body .expiring-list {
+  border-top: 0;
+}
+
+
+/* ---- componi il team (first screen) ---- */
+
+.team-screen {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2.5rem 1rem;
+}
+
+.team-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: min(640px, 100%);
+  padding: 1.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+}
+
+.team-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.team-panel-head h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.pratica-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.9rem 1rem;
+  border-radius: var(--radius-block);
+  background: var(--paper);
+}
+
+.pratica-card .field-hint {
+  margin: 0;
+}
+
+.pratica-sede {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.05rem;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-create {
+  margin-right: 0.5rem;
+  white-space: nowrap;
+}
+
+.btn-link {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+/* team recap in the "Crea nuova visita" form */
+.team-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.team-summary li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.6rem;
+}
+
+.team-summary .vincolo-error {
+  flex-basis: 100%;
+}
+
+.team-summary-role {
+  min-width: 6.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.esterno-flag.esterno-inline {
+  position: static;
+  transform: none;
+}
+
+/* ---- pratica joinable with a visit already on the calendar (V-11): violet, the visita congiunta colour ---- */
+
+.pratica-scadenza {
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.btn-congiunta {
+  border-color: var(--congiunta);
+  color: var(--congiunta);
+  font-weight: 600;
+}
+
+.btn-congiunta:hover:not(:disabled) {
+  background: var(--congiunta-soft);
+}
+
+.congiungibili {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-self: stretch;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.congiungibili li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius-block);
+  background: var(--surface);
+}
+
+.congiungibile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.congiungibile-info span {
+  color: var(--muted);
+}
+
+.congiunta-note .field-hint {
+  margin: 0;
+}
+
+/* ---- conferma / elimina of a visit already on the calendar ---- */
+
+.agenda-actions {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.agenda-actions .btn-edit {
+  margin-left: 0;
+}
+
+.stato-confermata {
+  flex-shrink: 0;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.stato-confermata::before {
+  content: '✓ ';
+}
+
+.form-actions .stato-confermata {
+  align-self: center;
+}
+
+.btn-conferma {
+  font-weight: 600;
+}
+
+.btn-elimina {
+  color: var(--danger);
+}
+
+.btn-elimina:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.form-actions-spacer {
+  flex: 1;
+}
