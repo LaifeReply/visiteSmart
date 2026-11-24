@@ -1,0 +1,2 @@
+# The SQL dump is loaded by sqlite3 inside a Linux container: keep LF line endings on every OS
+*.sql text eol=lf

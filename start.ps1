@@ -4,13 +4,14 @@
 
 .DESCRIPTION
     1. Avvia Docker Desktop se non e' gia' attivo e aspetta che risponda.
-    2. Ricostruisce l'immagine del backend (cartella backend/) e ricrea il container "visite-api".
-       I dati stanno nel volume "visite_data", quindi ricreare il container non perde nulla.
+    2. Avvia il backend con docker compose (docker-compose.yml): ricostruisce l'immagine da backend/ e ricrea
+       il container "visite-api". Il database sta nel volume "visite_data"; se e' vuoto (es. su un PC nuovo)
+       viene creato dal dump db/visite.sql. Ricreare il container non perde nulla.
     3. Aspetta che il backend risponda su http://localhost:8000/visite.
     4. Avvia il frontend con "npm run dev" (installa le dipendenze se mancano).
        Se la porta 5173 e' gia' occupata, il frontend e' gia' attivo e non viene riavviato.
 
-    Ctrl+C ferma il frontend; il backend resta attivo in Docker (per fermarlo: docker stop visite-api).
+    Ctrl+C ferma il frontend; il backend resta attivo in Docker (per fermarlo: docker compose down).
 
 .PARAMETER NoBuild
     Non ricostruisce l'immagine del backend: riusa quella esistente (avvio piu' rapido se backend/ non e' cambiato).
@@ -53,15 +54,14 @@ if (-not (Test-Docker)) {
 }
 Write-Host 'Docker pronto.'
 
-# ---- 2. Backend
-Write-Step 'Backend (container visite-api, porta 8000)'
-if (-not $NoBuild) {
-    docker build -t visite-api backend
-    if ($LASTEXITCODE -ne 0) { throw 'docker build non riuscito.' }
-}
+# ---- 2. Backend (docker compose: seed del db dal dump se serve, poi il container visite-api)
+Write-Step 'Backend (docker compose, porta 8000)'
+# un container "visite-api" creato a mano con docker run (vecchie versioni di questo script) bloccherebbe compose
 cmd /c "docker rm -f visite-api >nul 2>&1"
-docker run -d --name visite-api -p 8000:8000 -v visite_data:/data visite-api | Out-Null
-if ($LASTEXITCODE -ne 0) { throw 'docker run non riuscito (la porta 8000 e'' gia'' occupata?).' }
+$composeArgs = @('compose', 'up', '-d')
+if (-not $NoBuild) { $composeArgs += '--build' }
+docker @composeArgs
+if ($LASTEXITCODE -ne 0) { throw 'docker compose up non riuscito (la porta 8000 e'' gia'' occupata?).' }
 
 Wait-Until {
     try { (Invoke-WebRequest -Uri $BackendUrl -UseBasicParsing -TimeoutSec 3).StatusCode -eq 200 } catch { $false }

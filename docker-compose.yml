@@ -1,0 +1,50 @@
+# Backend Visite + database SQLite riproducibile.
+#
+#   docker compose up -d --build     avvia (o ricostruisce) il backend su http://localhost:8000
+#   docker compose down              ferma tutto, i dati restano nel volume
+#
+# Il database vive nel volume "visite_data" (/data/visite.db). Al primo avvio, se il file non esiste,
+# il servizio db-seed lo crea dal dump db/visite.sql; se esiste gia' non lo tocca.
+# Per rigenerare il dump dopo modifiche ai dati:
+#   docker compose run --rm -T --entrypoint sqlite3 db-seed /data/visite.db .dump > db/visite.sql
+#
+# ATTENZIONE: "docker compose down -v" cancella il volume, cioe' il database e i backup che contiene.
+#
+# VISITE_VOLUME, API_PORT e API_CONTAINER servono solo per provare il seed su un volume separato senza toccare quello vero.
+
+name: visite
+
+services:
+  db-seed:
+    image: alpine/sqlite
+    volumes:
+      - visite_data:/data
+      - ./db/visite.sql:/seed/visite.sql:ro
+    entrypoint:
+      - sh
+      - -c
+      - |
+        if [ -f /data/visite.db ]; then
+          echo "db-seed: /data/visite.db esiste gia', nessun caricamento"
+        else
+          echo "db-seed: creo /data/visite.db da db/visite.sql"
+          sqlite3 /data/visite.db < /seed/visite.sql
+        fi
+    restart: "no"
+
+  api:
+    build: ./backend
+    image: visite-api
+    container_name: ${API_CONTAINER:-visite-api}
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      - visite_data:/data
+    depends_on:
+      db-seed:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+volumes:
+  visite_data:
+    name: ${VISITE_VOLUME:-visite_data}

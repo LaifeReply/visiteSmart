@@ -32,3 +32,11 @@ backend/.venv
 # Generated / local-only
 graphify-out/
 .claude/settings.local.json
+
+# Not part of the codebase: images, diagrams and analysis documents stay local
+*.png
+*.jpg
+*.jpeg
+*.drawio
+modifiche.md
+docs/
